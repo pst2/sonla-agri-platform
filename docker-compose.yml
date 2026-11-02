@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sonla_agri_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agri_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agri_secret_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-sonla_agri_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agri_admin} -d ${POSTGRES_DB:-sonla_agri_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sonla_agri_backend
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-agri_admin}:${POSTGRES_PASSWORD:-agri_secret_2026}@postgres:5432/${POSTGRES_DB:-sonla_agri_db}
+      SECRET_KEY: ${SECRET_KEY:-sonla-agri-heritage-secret-key-2026-uet-thesis}
+      ML_ARTIFACTS_DIR: /app/ml/artifacts
+      ML_DATA_DIR: /app/ml/data
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ml/artifacts:/app/ml/artifacts
+      - ./ml/data:/app/ml/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: sonla_agri_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
