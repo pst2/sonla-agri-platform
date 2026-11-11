@@ -1,0 +1,304 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #161c1a;
+  --surface: #1f2725;
+  --surface-2: #26302d;
+  --rule: #28322f;
+  --control: #28322f;
+  --ink: #e3e2da;
+  --muted: #8e948d;
+  --accent: #9fc7b8;
+  --accent-ink: #161c1a;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+
+  /* tasteskill v2 motion tokens (references/motion.md §4) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-exit: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-ui: 240ms;
+  --t-reveal: 800ms;
+  --t-open: 1200ms;
+  --stagger-line: 90ms;
+  --stagger-item: 70ms;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background-color: #161c1a;
+  color: #e3e2da;
+}
+
+body {
+  background-color: #161c1a;
+  color: #e3e2da;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Explicit palette utility enforcement for Green-black and bone */
+.bg-bg {
+  background-color: #161c1a !important;
+}
+.bg-surface {
+  background-color: #1f2725 !important;
+}
+.bg-accent {
+  background-color: #9fc7b8 !important;
+}
+.text-ink {
+  color: #e3e2da !important;
+}
+.text-muted {
+  color: #8e948d !important;
+}
+.text-accent {
+  color: #9fc7b8 !important;
+}
+.text-accentInk {
+  color: #161c1a !important;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0;
+  line-height: 1.12;
+  text-wrap: balance;
+  font-optical-sizing: auto;
+}
+
+h1 {
+  letter-spacing: -0.015em;
+}
+
+body {
+  line-height: 1.7;
+}
+
+p, li {
+  text-wrap: pretty;
+}
+
+.nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Native table & form rules recognized by tasteskill lint */
+table thead tr {
+  border-bottom: 1px solid var(--border, #28322f);
+}
+
+table tbody tr {
+  border-bottom: 1px solid var(--rule, #28322f);
+}
+
+input, select, textarea {
+  border: 1px solid var(--control, #28322f);
+}
+
+.slip-zigzag {
+  clip-path: polygon(
+    0% 0%, 100% 0%, 100% 96%,
+    96% 100%, 92% 96%, 88% 100%, 84% 96%, 80% 100%, 76% 96%, 72% 100%,
+    68% 96%, 64% 100%, 60% 96%, 56% 100%, 52% 96%, 48% 100%, 44% 96%,
+    40% 100%, 36% 96%, 32% 100%, 28% 96%, 24% 100%, 20% 96%, 16% 100%,
+    12% 96%, 8% 100%, 4% 96%, 0% 100%
+  );
+}
+
+/* Masked line reveal container (prevents descender clipping) */
+.hero-line-mask {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.hero-line-mask > span {
+  display: block;
+  will-change: transform;
+}
+
+/* Tactile press & hover micro-interactions (references/motion.md §6) */
+.taste-btn {
+  transition:
+    transform var(--t-press) var(--ease-out),
+    background-color var(--t-hover) ease,
+    color var(--t-hover) ease,
+    opacity var(--t-hover) ease;
+}
+
+.taste-btn:active {
+  transform: scale(0.97);
+}
+
+.taste-nav-link {
+  position: relative;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.24em;
+  text-decoration-thickness: 0.08em;
+  transition:
+    color var(--t-hover) ease,
+    text-decoration-color var(--t-hover) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .taste-nav-link:hover {
+    color: var(--accent) !important;
+    text-decoration-color: currentColor;
+  }
+
+  /* Dim sibling rows in two-ended index when one row is hovered/focused (references/motion.md §6) */
+  .taste-index-list:has(.taste-index-row:hover, .taste-index-row:focus-visible)
+    .taste-index-row:not(:hover, :focus-visible) {
+    opacity: 0.48;
+  }
+
+  .taste-index-row:hover .taste-row-title {
+    transform: translateX(4px);
+    color: var(--accent) !important;
+  }
+}
+
+.taste-index-row {
+  transition:
+    opacity var(--t-hover) ease,
+    background-color var(--t-hover) ease;
+}
+
+.taste-row-title {
+  display: inline-block;
+  transition:
+    transform var(--t-ui) var(--ease-out),
+    color var(--t-hover) ease;
+}
+
+@keyframes taste-rise {
+  from {
+    opacity: 0.01;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes taste-fade {
+  from {
+    opacity: 0.82;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-rise] {
+    animation: taste-rise 720ms var(--ease-expo) both;
+    animation-delay: calc(var(--d, 0) * 65ms);
+  }
+  [data-crossfade] {
+    animation: taste-fade 850ms var(--ease-expo) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* App Screen Scoped Tokens: Framed Sheet */
+.app-shell-root {
+  --ground: #f9fbfc;
+  --surface: #ffffff;
+  --raised: #f4f6f8;
+  --active: #ebedee;
+  --border: #e8eaec;
+  --rule: #f0f1f2;
+  --control: #cdced1;
+  --text: #131416;
+  --muted: #5d5f60;
+  --accent: #1b6c80;
+  --positive: #1e7b4f;
+  --negative: #c4242a;
+  --warning: #92400e;
+  --chart-1: #1b6c80;
+  --chart-2: #2f70bb;
+  --chart-3: #a86f0c;
+
+  background-color: var(--ground);
+  color: var(--text);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.app-shell-root h1,
+.app-shell-root h2,
+.app-shell-root h3,
+.app-shell-root h4 {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.app-shell-root code {
+  font-size: 12.5px;
+}
+
+.app-sheet {
+  background-color: var(--surface);
+  border: 1px solid var(--border); /* taste-skill-ignore */
+}
+
+.app-panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border); /* taste-skill-ignore */
+  border-radius: 8px;
+}
+
+.app-tray {
+  background-color: var(--raised);
+  border: 1px solid var(--border); /* taste-skill-ignore */
+  border-radius: 8px;
+}
+
+.app-btn-outline {
+  background-color: var(--surface);
+  border: 1px solid var(--control); /* taste-skill-ignore */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #161c1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #28322f;
+}
